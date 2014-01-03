@@ -6,12 +6,12 @@ module Capistrano::S3::Publisher
 
   LAST_PUBLISHED_FILE = '.last_published'
 
-  def self.publish!(s3_endpoint, key, secret, bucket, source, extra_options)
+  def self.publish!(s3_endpoint, key, secret, bucket, source, file_age_method, extra_options)
     s3 = self.establish_s3_client_connection!(s3_endpoint, key, secret)
 
     self.files(source).each do |file|
       if !File.directory?(file)
-        next if self.published?(file)
+        next if self.published?(file, file_age_method)
 
         path = self.base_file_path(source, file)
         path.gsub!(/^\//, "") # Remove preceding slash for S3
@@ -59,9 +59,17 @@ module Capistrano::S3::Publisher
       Dir.glob("#{deployment_path}/**/*")
     end
 
-    def self.published?(file)
+    def self.published?(file, file_age_method)
       return false unless File.exists? LAST_PUBLISHED_FILE
-      File.mtime(file) < File.mtime(LAST_PUBLISHED_FILE)
+
+      threshold_time = File.mtime(LAST_PUBLISHED_FILE)
+
+      case file_age_method
+      when :atime, :mtime, :ctime
+        File.send(file_age_method, file) < threshold_time
+      else
+        raise ArgumentError, "Unknown file age check method #{file_age_method}"
+      end
     end
 
     def self.put_object(s3, bucket, path, file, extra_options)

@@ -15,6 +15,7 @@ module Capistrano
     _cset :deployment_path, Dir.pwd.gsub("\n", "") + "/public"
     _cset :bucket_write_options, :acl => :public_read
     _cset :s3_endpoint, 's3.amazonaws.com'
+    _cset :file_age_method, :mtime
     _cset :redirect_options, {}
 
     # Deployment recipes
@@ -29,7 +30,7 @@ module Capistrano
         task :upload_files do
           extra_options = { :write => bucket_write_options, :redirect => redirect_options }
           S3::Publisher.publish!(s3_endpoint, access_key_id, secret_access_key,
-                             bucket, deployment_path, extra_options)
+                             bucket, deployment_path, file_age_method, extra_options)
         end
       end
 
