@@ -43,6 +43,11 @@ set :access_key_id, "CHANGETHIS"
 set :secret_access_key, "CHANGETHIS"
 ```
 
+### Capistrano 3
+
+ - Add `require "capistrano/s3"` to Capfile
+ - Deploy explicitly specifying stage, e.g. `cap production deploy`
+
 ### Deploying
 
 Add content to your public folder and run `cap deploy`.
