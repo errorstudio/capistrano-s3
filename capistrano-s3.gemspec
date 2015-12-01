@@ -20,6 +20,6 @@ Gem::Specification.new do |s|
 
   # Gem dependencies
   s.add_dependency 'aws-sdk', '~> 1.11'
-  s.add_dependency 'capistrano', '< 3'
+  s.add_dependency 'capistrano', '>= 2'
   s.add_dependency 'mime-types', '~> 1.23'
 end

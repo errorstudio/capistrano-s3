@@ -3,7 +3,7 @@ PATH
   specs:
     capistrano-s3 (0.2.11)
       aws-sdk (~> 1.11)
-      capistrano (< 3)
+      capistrano (>= 2)
       mime-types (~> 1.23)
 
 GEM
