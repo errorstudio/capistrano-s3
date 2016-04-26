@@ -17,6 +17,13 @@ namespace :deploy do
       Capistrano::S3::Publisher.publish!(fetch(:s3_endpoint), fetch(:access_key_id), fetch(:secret_access_key),
                              fetch(:bucket), fetch(:deployment_path), extra_options)
     end
+
+    desc "Upload a single file"
+    task :upload_single, [:file] do |t, args|
+      extra_options = { :write => fetch(:bucket_write_options), :redirect => fetch(:redirect_options) }
+      Capistrano::S3::Publisher.publish_single!(fetch(:s3_endpoint), fetch(:access_key_id), fetch(:secret_access_key),
+                                         fetch(:bucket), fetch(:deployment_path), File.join(fetch(:deployment_path), args[:file]), extra_options)
+    end
   end
 
   before :updated, :upload_s3 do

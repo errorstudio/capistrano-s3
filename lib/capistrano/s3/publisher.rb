@@ -24,12 +24,31 @@ module Capistrano
         FileUtils.touch(LAST_PUBLISHED_FILE)
       end
 
+      def self.publish_single!(s3_endpoint, key, secret, bucket, source, file, extra_options)
+        s3 = self.establish_s3_client_connection!(s3_endpoint, key, secret)
+
+        # self.files(source).each do |file|
+          if !File.directory?(file)
+            puts file
+
+            path = self.base_file_path(source, file)
+            path.gsub!(/^\//, "") # Remove preceding slash for S3
+
+            self.put_object(s3, bucket, path, file, extra_options)
+          end
+        # end
+
+        FileUtils.touch(LAST_PUBLISHED_FILE)
+      end
+
       def self.clear!(s3_endpoint, key, secret, bucket)
         s3 = self.establish_s3_connection!(s3_endpoint, key, secret)
         s3.buckets[bucket].clear!
 
         FileUtils.rm(LAST_PUBLISHED_FILE)
       end
+
+
 
       private
 
